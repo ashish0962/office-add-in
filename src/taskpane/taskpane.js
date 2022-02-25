@@ -4,6 +4,7 @@
  */
 
 /* global console, document, Excel, Office */
+import './taskpane.css'
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
@@ -20,7 +21,8 @@ Office.onReady((info) => {
     document.getElementById("sort-table").onclick = sortTable;
     document.getElementById("create-chart").onclick = createChart;
     document.getElementById("freeze-header").onclick = freezeHeader;
-    document.getElementById("open-dialog").onclick = openDialog;
+    // document.getElementById("open-dialog").onclick = openDialog;
+    document.getElementById("select-option").onchange = doSomething;
   }
 });
 
@@ -150,7 +152,7 @@ function openDialog() {
     'https://localhost:3000/popup.html',
     {height: 45, width: 55},
 
-    // TODO2: Add callback parameter.
+    // TODO2: Add callback parameter
     function (result) {
       dialog = result.value;
       dialog.addEventHandler(Office.EventType.DialogMessageReceived, processMessage);
@@ -163,6 +165,43 @@ function processMessage(arg) {
   dialog.close();
 }
 
+function revokeFilter() {
+  Excel.run(function(context){
+    const currentWorksheet = context.workbook.worksheets.getActiveWorksheet()
+    const expensesTable = currentWorksheet.tables.getItem('ExpensesTable')
+    expensesTable.clearFilters()
+    return context.sync();
+  })
+  .catch(function (error) {
+    console.log("Error: " + error);
+    if (error instanceof OfficeExtension.Error) {
+        console.log("Debug info: " + JSON.stringify(error.debugInfo));
+    }
+  });
+}
+
+
+function doSomething(e) {
+  switch(e.target.value){
+    case 'filter-table':
+      filterTable()
+      break;
+    case 'sort-table':
+      sortTable()
+      break;
+    case 'create-chart':
+      createChart()
+      break;
+    case 'freeze-header':
+      freezeHeader()
+      break;
+    case 'revoke-filter':
+      revokeFilter()
+      break;
+    default:
+      console.log("selected value is " + e.target.value)
+  }
+}
 
 
 

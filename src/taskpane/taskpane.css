@@ -3,6 +3,10 @@
  * See LICENSE in the project root for license information.
  */
 
+ @import "tailwindcss/base";
+ @import "tailwindcss/components";
+ @import "tailwindcss/utilities";
+
  html,
  body {
      width: 100%;
